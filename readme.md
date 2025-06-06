@@ -1,173 +1,164 @@
-# Coconut Pest Classification Model
+# Coconut Pest Classification System
 
-A deep learning model for classifying different types of coconut pests using TensorFlow and EfficientNet architecture.
+A deep learning system for classifying common coconut pests using EfficientNetV2B0. The system can identify four types of pests with high accuracy.
 
-## Dataset Structure
+## Features
 
-The dataset consists of four pest categories:
-- Beetles (116 images)
-- Beal Miner (144 images)
-- Leaf Spot (171 images)
-- White Flies (163 images)
+- 🔍 Identifies 4 types of coconut pests:
+  - Beetles
+  - Beal Miner
+  - Leaf Spot
+  - White Flies
+- 🎯 High accuracy (100% on validation set)
+- 🖥️ Multiple interfaces:
+  - Command-line tool
+  - Web interface (Streamlit)
+- 🚀 Fast inference
+- 📊 Confidence scores for predictions
 
-Images are split 80-20 between training and validation sets.
+## Installation
 
-## Model Architecture
+### Prerequisites
 
-The model uses EfficientNet-B0 architecture with transfer learning:
+- Python 3.8 or higher
+- CUDA-capable GPU (optional, for faster inference)
 
-### 1. Base Model
-- EfficientNet-B0 pre-trained on ImageNet
-- Input: RGB images of size 224x224x3
-- Images are normalized (pixel values divided by 255)
+### Basic Setup
 
-### Why EfficientNet?
-EfficientNet is a state-of-the-art architecture that:
-1. Uses compound scaling to balance network depth, width, and resolution
-2. Achieves better accuracy and efficiency than traditional CNNs
-3. Requires fewer parameters while maintaining high performance
-4. Utilizes mobile inverted bottleneck convolution (MBConv) blocks
-
-### Model Structure
-```
-1. EfficientNet-B0 (pre-trained, frozen)
-   ↓
-2. Global Average Pooling 2D
-   ↓
-3. Batch Normalization
-   ↓
-4. Dropout (0.2)
-   ↓
-5. Dense Layer (128 units, ReLU)
-   ↓
-6. Dropout (0.3)
-   ↓
-7. Output Layer (4 units, Softmax)
-```
-
-## Transfer Learning Benefits
-- Leverages knowledge from ImageNet (1.4M images)
-- Reduces training time significantly
-- Improves generalization
-- Better performance with limited data
-
-## Training Parameters
-
-The model uses the following training configuration:
-
-- **Batch Size**: 32 images
-- **Epochs**: 20
-- **Optimizer**: Adam
-- **Loss Function**: Categorical Cross-entropy
-- **Metrics**: Accuracy
-
-### Data Augmentation
-To improve model robustness, the following augmentations are applied to training images:
-```python
-rotation_range=20
-width_shift_range=0.2
-height_shift_range=0.2
-shear_range=0.2
-zoom_range=0.2
-horizontal_flip=True
-```
-
-## Using the Model for Predictions
-
-Once trained, you can use the model for predictions using the following code:
-
-```python
-import tensorflow as tf
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-import numpy as np
-
-def predict_pest(image_path, model_path='coconut_pest_classifier.h5'):
-    # Load the model
-    model = tf.keras.models.load_model(model_path)
-    
-    # Load and preprocess the image
-    img = load_img(image_path, target_size=(224, 224))
-    img_array = img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0
-    
-    # Make prediction
-    prediction = model.predict(img_array)
-    
-    # Get class names
-    class_names = ['beetles', 'beal_miner', 'leaf_spot', 'white_flies']
-    
-    # Get the predicted class and confidence
-    predicted_class = class_names[np.argmax(prediction)]
-    confidence = np.max(prediction)
-    
-    return predicted_class, confidence
-
-# Example usage
-image_path = 'path/to/your/image.jpg'
-pest_type, confidence = predict_pest(image_path)
-print(f"Predicted pest: {pest_type}")
-print(f"Confidence: {confidence:.2%}")
-```
-
-## Model Performance
-
-The training process generates a `training_history.png` file showing:
-- Training vs. Validation Accuracy
-- Training vs. Validation Loss
-
-This helps visualize the model's learning progress and identify potential overfitting.
-
-## Adjusting Parameters
-
-To modify the model's behavior, you can adjust these parameters in `coconut_disease_classifier.py`:
-
-```python
-# Image parameters
-IMG_HEIGHT = 224
-IMG_WIDTH = 224
-BATCH_SIZE = 32
-EPOCHS = 20
-
-# Model architecture
-# Increase/decrease number of filters in Conv2D layers
-# Adjust Dense layer sizes
-# Modify Dropout rate
-
-# Data augmentation
-# Adjust augmentation parameters in train_datagen
-```
-
-## Requirements
-
+1. Clone the repository:
 ```bash
-tensorflow==2.15.0
-numpy==1.24.3
-pandas==2.1.4
-scikit-learn==1.3.2
-matplotlib==3.8.2
-Pillow==10.1.0
+git clone [repository-url]
+cd coconut-pest-classifier
 ```
 
-## Setup and Training
+2. Create and activate a virtual environment:
+```bash
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
 
-1. Install dependencies:
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Organize dataset:
+### GPU Support (Optional)
+
+For GPU acceleration, you need:
+1. NVIDIA GPU with CUDA support
+2. CUDA Toolkit 11.8
+3. cuDNN 8.6 or later
+
+Installation steps:
+1. Download and install [CUDA Toolkit 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive)
+2. Download and install [cuDNN v8.6](https://developer.nvidia.com/cudnn) (requires NVIDIA account)
+3. Add CUDA paths to system environment variables
+
+## Usage
+
+### Command Line Interface
+
+1. Test a single image:
 ```bash
-python organize_dataset.py
+python test_prediction.py
+```
+- Follow the prompts to select an image
+- View prediction results and confidence scores
+
+### Web Interface
+
+1. Start the Streamlit app:
+```bash
+python -m streamlit run app.py
+```
+2. Open your browser at `http://localhost:8501`
+3. Upload an image using the interface
+4. View predictions and confidence scores
+
+## Project Structure
+
+```
+coconut-pest-classifier/
+├── app.py                     # Streamlit web interface
+├── test_prediction.py         # Command-line testing tool
+├── requirements.txt           # Python dependencies
+├── README.md                 # This file
+├── readme_finetune.md        # Model development details
+├── best_model_phase_3.h5     # Trained model
+└── dataset/                  # Dataset directory
+    ├── training/             # Training images
+    └── validation/          # Validation images
 ```
 
-3. Train the model:
+## Model Performance
+
+- Training Accuracy: 99.48%
+- Validation Accuracy: 100%
+- Loss: 0.0114
+
+For detailed information about the model architecture and training process, see [readme_finetune.md](readme_finetune.md).
+
+## Example Usage
+
+### Command Line Interface
 ```bash
-python coconut_disease_classifier.py
+> python test_prediction.py
+
+Available validation images per class:
+Beetles: 23 images
+Beal Miner: 28 images
+Leaf Spot: 34 images
+White Flies: 32 images
+
+Options:
+1. Test random image
+2. Test specific class
+3. Quit
 ```
 
-## Model Output
+### Web Interface
+![Streamlit Interface](screenshots/streamlit_interface.png)
+1. Upload an image using the file uploader
+2. View the image preview
+3. See prediction results with confidence bars
+4. Check detailed model information in the sidebar
 
-The training process will generate:
-1. `coconut_pest_classifier.h5` - The trained model
-2. `training_history.png` - Training progress visualization
+## Troubleshooting
+
+### Common Issues
+
+1. **GPU Not Detected**
+   - Verify CUDA installation: `nvidia-smi`
+   - Check TensorFlow GPU support: `python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"`
+   - Ensure CUDA version matches TensorFlow requirements
+
+2. **Import Errors**
+   - Verify virtual environment is activated
+   - Reinstall requirements: `pip install -r requirements.txt`
+
+3. **Model Loading Error**
+   - Check if model file exists in correct location
+   - Verify TensorFlow version compatibility
+
+### Getting Help
+
+For more information:
+- Check the [model fine-tuning documentation](readme_finetune.md)
+- Submit an issue on GitHub
+- Contact the maintainers
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Dataset contributors
+- EfficientNet team for the base model
+- TensorFlow and Keras teams
+- Streamlit team for the web framework
