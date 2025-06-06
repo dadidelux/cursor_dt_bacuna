@@ -101,31 +101,30 @@ def create_callbacks(phase):
         )
     ]
 
-def plot_training_history(history, phase):
-    """Plot training history with improved visualization"""
-    plt.style.use('seaborn')
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+def plot_training_history(history, phase_idx):
+    # Create figure with two subplots
+    plt.figure(figsize=(12, 4))
     
-    # Plot accuracy
-    ax1.plot(history.history['accuracy'], label='Training', linewidth=2)
-    ax1.plot(history.history['val_accuracy'], label='Validation', linewidth=2)
-    ax1.set_title(f'Model Accuracy - Phase {phase}', fontsize=12, pad=15)
-    ax1.set_xlabel('Epoch', fontsize=10)
-    ax1.set_ylabel('Accuracy', fontsize=10)
-    ax1.legend(loc='lower right', fontsize=10)
-    ax1.grid(True, linestyle='--', alpha=0.7)
-    
-    # Plot loss
-    ax2.plot(history.history['loss'], label='Training', linewidth=2)
-    ax2.plot(history.history['val_loss'], label='Validation', linewidth=2)
-    ax2.set_title(f'Model Loss - Phase {phase}', fontsize=12, pad=15)
-    ax2.set_xlabel('Epoch', fontsize=10)
-    ax2.set_ylabel('Loss', fontsize=10)
-    ax2.legend(loc='upper right', fontsize=10)
-    ax2.grid(True, linestyle='--', alpha=0.7)
+    # Plot training & validation accuracy values
+    plt.subplot(1, 2, 1)
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
+    plt.title(f'Phase {phase_idx + 1} Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
+
+    # Plot training & validation loss values
+    plt.subplot(1, 2, 2)
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title(f'Phase {phase_idx + 1} Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
     
     plt.tight_layout()
-    plt.savefig(f'training_history_phase_{phase}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'training_history_phase_{phase_idx + 1}.png')
     plt.close()
 
 def main():
@@ -229,7 +228,7 @@ def main():
         )
         
         # Plot history for this phase
-        plot_training_history(history, phase_idx)
+        plot_training_history(history, phase_idx - 1)
         
         # Save phase model
         model.save(f'model_phase_{phase_idx}.h5')
