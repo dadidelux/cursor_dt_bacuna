@@ -6,21 +6,35 @@ A deep learning system for classifying common coconut pests using EfficientNetV2
 
 - 🔍 Identifies 4 types of coconut pests:
   - Beetles
-  - Beal Miner
+  - Leaf Miner
   - Leaf Spot
   - White Flies
-- 🎯 High accuracy (100% on validation set)
+- 🎯 High accuracy model
 - 🖥️ Multiple interfaces:
   - Command-line tool
   - Web interface (Streamlit)
 - 🚀 Fast inference
 - 📊 Confidence scores for predictions
 
+## Dataset Organization
+
+### Training Set (80%): 473 images
+- Beetles: 92 images
+- Leaf Miner: 115 images
+- Leaf Spot: 136 images
+- White Flies: 130 images
+
+### Validation Set (20%): 121 images
+- Beetles: 24 images
+- Leaf Miner: 29 images
+- Leaf Spot: 35 images
+- White Flies: 33 images
+
 ## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - CUDA-capable GPU (optional, for faster inference)
 
 ### Basic Setup
@@ -80,77 +94,47 @@ python -m streamlit run app.py
 3. Upload an image using the interface
 4. View predictions and confidence scores
 
+## Docker Deployment
+
+### Local Development
+```bash
+docker-compose up --build
+```
+
+### Production Deployment
+1. Configure SSL certificates
+2. Update domain in nginx configuration
+3. Run with production settings:
+```bash
+docker-compose -f docker-compose.prod.yml up --build -d
+```
+
 ## Project Structure
 
 ```
 coconut-pest-classifier/
 ├── app.py                     # Streamlit web interface
 ├── test_prediction.py         # Command-line testing tool
+├── coconut_disease_classifier.py  # Model training script
 ├── requirements.txt           # Python dependencies
-├── README.md                 # This file
-├── readme_finetune.md        # Model development details
-├── best_model_phase_3.h5     # Trained model
-└── dataset/                  # Dataset directory
-    ├── training/             # Training images
-    └── validation/          # Validation images
+├── Dockerfile                # Container configuration
+├── docker-compose.yml        # Docker services setup
+├── nginx/                    # Nginx configuration
+├── dataset/                  # Training and validation data
+│   ├── train/               # Training images (80%)
+│   └── validation/          # Validation images (20%)
+└── model/                    # Trained model files
 ```
 
-## Model Performance
+## Model Architecture
 
-- Training Accuracy: 99.48%
-- Validation Accuracy: 100%
-- Loss: 0.0114
+- Base: EfficientNetV2B0
+- Custom classification head with residual connections
+- Progressive training in three phases
+- Data augmentation for training
+- Class weight balancing
 
 For detailed information about the model architecture and training process, see [readme_finetune.md](readme_finetune.md).
-
-## Example Usage
-
-### Command Line Interface
-```bash
-> python test_prediction.py
-
-Available validation images per class:
-Beetles: 23 images
-Beal Miner: 28 images
-Leaf Spot: 34 images
-White Flies: 32 images
-
-Options:
-1. Test random image
-2. Test specific class
-3. Quit
-```
-
-### Web Interface
-![Streamlit Interface](screenshots/streamlit_interface.png)
-1. Upload an image using the file uploader
-2. View the image preview
-3. See prediction results with confidence bars
-4. Check detailed model information in the sidebar
-
-## Troubleshooting
-
-### Common Issues
-
-1. **GPU Not Detected**
-   - Verify CUDA installation: `nvidia-smi`
-   - Check TensorFlow GPU support: `python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"`
-   - Ensure CUDA version matches TensorFlow requirements
-
-2. **Import Errors**
-   - Verify virtual environment is activated
-   - Reinstall requirements: `pip install -r requirements.txt`
-
-3. **Model Loading Error**
-   - Check if model file exists in correct location
-   - Verify TensorFlow version compatibility
-
-### Getting Help
-
-For more information:
-- Check the [model fine-tuning documentation](readme_finetune.md)
-- Submit an issue on GitHub
-- Contact the maintainers
 
 ## License
 
@@ -159,6 +143,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Dataset contributors
-- EfficientNet team for the base model
-- TensorFlow and Keras teams
-- Streamlit team for the web framework
+- EfficientNet authors
+- TensorFlow team

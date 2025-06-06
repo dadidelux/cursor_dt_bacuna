@@ -6,7 +6,7 @@ import os
 import random
 
 # Class labels
-class_names = ['beetles', 'beal_miner', 'leaf_spot', 'white_flies']
+class_names = ['beetles', 'leaf_miner', 'leaf_spot', 'white_flies']
 
 def preprocess_image(image_path):
     """Preprocess a single image for prediction."""

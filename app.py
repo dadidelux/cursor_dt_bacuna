@@ -7,7 +7,7 @@ from PIL import Image
 import io
 
 # Class labels
-class_names = ['beetles', 'beal_miner', 'leaf_spot', 'white_flies']
+class_names = ['beetles', 'leaf_miner', 'leaf_spot', 'white_flies']
 
 def preprocess_image(image):
     """Preprocess a PIL image for prediction."""
@@ -57,7 +57,7 @@ def main():
     st.sidebar.info("""
     This model can detect the following pests:
     1. Beetles
-    2. Beal Miner
+    2. Leaf Miner
     3. Leaf Spot
     4. White Flies
     

@@ -1,0 +1,43 @@
+services:
+  streamlit:
+    build: .
+    container_name: coconut_pest_classifier
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+      - model_data:/app/model
+    environment:
+      - TZ=Asia/Manila
+    restart: unless-stopped
+    networks:
+      - app_network
+    # If you want to use GPU, uncomment these lines
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Optional: Add Nginx as reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - streamlit
+    restart: unless-stopped
+    networks:
+      - app_network
+
+volumes:
+  model_data:
+
+networks:
+  app_network:
+    driver: bridge 

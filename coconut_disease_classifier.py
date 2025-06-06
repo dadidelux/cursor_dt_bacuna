@@ -137,9 +137,11 @@ def main():
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        fill_mode='nearest',
-        validation_split=0.2
+        fill_mode='nearest'
     )
+    
+    # Validation data generator (only rescaling)
+    val_datagen = ImageDataGenerator(rescale=1./255)
     
     # Load training data
     train_generator = train_datagen.flow_from_directory(
@@ -147,17 +149,15 @@ def main():
         target_size=(IMG_HEIGHT, IMG_WIDTH),
         batch_size=BATCH_SIZE,
         class_mode='categorical',
-        subset='training',
         shuffle=True
     )
     
     # Load validation data
-    validation_generator = train_datagen.flow_from_directory(
-        'dataset/train',
+    validation_generator = val_datagen.flow_from_directory(
+        'dataset/validation',
         target_size=(IMG_HEIGHT, IMG_WIDTH),
         batch_size=BATCH_SIZE,
         class_mode='categorical',
-        subset='validation',
         shuffle=True
     )
     

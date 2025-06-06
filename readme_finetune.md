@@ -6,17 +6,35 @@ This document details the process of fine-tuning our coconut pest classification
 
 ### Classes
 - Beetles
-- Beal Miner
+- Leaf Miner
 - Leaf Spot
 - White Flies
 
-### Dataset Distribution
-- **Training Set**: 477 images
-  - Beetles: 116 images
-  - Beal Miner: 144 images
-  - Leaf Spot: 171 images
-  - White Flies: 163 images
-- **Validation Set**: 117 images (20% split)
+### Dataset Organization
+The dataset is organized into training and validation sets:
+
+#### Training Set (80%): 473 images
+- Beetles: 92 images
+- Leaf Miner: 115 images
+- Leaf Spot: 136 images
+- White Flies: 130 images
+
+#### Validation Set (20%): 121 images
+- Beetles: 24 images
+- Leaf Miner: 29 images
+- Leaf Spot: 35 images
+- White Flies: 33 images
+
+### Data Augmentation
+- Training data:
+  * Random rotation (±20°)
+  * Width/height shifts (±20%)
+  * Shear transformation
+  * Zoom range (±20%)
+  * Horizontal flips
+  * Fill mode: nearest
+- Validation data:
+  * Only rescaling (1/255)
 
 ## Model Architecture
 
@@ -35,13 +53,13 @@ Dense (256 units)
 ↓
 Batch Normalization + ReLU
 ↓
-Dropout (0.5)
+Dropout (0.3)
 ↓
 Dense (256 units)
 ↓
 Batch Normalization + ReLU
 ↓
-Dropout (0.5)
+Dropout (0.3)
 ↓
 Residual Connection (Skip Connection)
 ↓
@@ -55,20 +73,23 @@ Dense (4 units, Softmax)
 - Train only the custom classification head
 - Learning rate: 0.001
 - Epochs: 15
-- Best validation accuracy: 94.68%
+- Early stopping with patience of 8
+- Learning rate reduction with patience of 4
 
 ### Phase 2: Partial Fine-Tuning
 - Unfreeze top 30 layers of base model
 - Keep earlier layers frozen
 - Learning rate: 0.0001
 - Epochs: 15
-- Best validation accuracy: 96.81%
+- Early stopping with patience of 8
+- Learning rate reduction with patience of 4
 
 ### Phase 3: Full Fine-Tuning
 - Unfreeze all layers
 - Very small learning rate: 0.00001
 - Epochs: 15
-- Best validation accuracy: 100%
+- Early stopping with patience of 8
+- Learning rate reduction with patience of 4
 
 ## Training Optimizations
 
@@ -77,28 +98,24 @@ Dense (4 units, Softmax)
   - Phase 1: 0.001
   - Phase 2: 0.0001
   - Phase 3: 0.00001
-- ReduceLROnPlateau:
-  - Monitor: val_accuracy
-  - Factor: 0.9
-  - Patience: 3
+- Exponential decay:
+  - Decay rate: 0.9
+  - Steps: 5 epochs worth of batches
+  - Staircase: True
 
 ### Class Weight Balancing
-Applied class weights to handle class imbalance:
-```python
-class_weights = {
-    'beetles': 1.0296,
-    'beal_miner': 1.2767,
-    'leaf_spot': 0.8705,
-    'white_flies': 0.9119
-}
-```
+Applied class weights to handle class imbalance using sklearn's compute_class_weight with 'balanced' mode.
 
-### Data Augmentation
-- Random rotation (±20°)
-- Random zoom (±20%)
-- Random horizontal flip
-- Random vertical flip
-- Random brightness adjustment (±20%)
+### Early Stopping Strategy
+- Monitor: validation accuracy
+- Patience: 8 epochs
+- Restore best weights: True
+
+### Learning Rate Reduction
+- Monitor: validation accuracy
+- Factor: 0.5
+- Patience: 4 epochs
+- Minimum learning rate: 1e-7
 
 ## Model Performance
 
@@ -123,7 +140,7 @@ All classes achieved near-perfect classification on the validation set, with the
    - Learning rate scheduling
 
 3. **Regularization**
-   - Dropout layers (0.5)
+   - Dropout layers (0.3)
    - Data augmentation
    - Early stopping
 
