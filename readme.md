@@ -85,6 +85,10 @@ python test_prediction.py
 - View prediction results and confidence scores
 
 ### Web Interface
+<p align="center">
+  <img src="Coconut-Pest-Control.jpg" alt="Coconut Pest Control" />
+</p>
+
 
 1. Start the Streamlit app:
 ```bash
