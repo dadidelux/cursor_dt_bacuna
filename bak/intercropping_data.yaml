@@ -1,0 +1,5 @@
+train: intercropping_yolo/images/train
+val: intercropping_yolo/images/train  # Use train as val for now, update if you split
+
+nc: 10  # Number of classes (update if you add/remove classes)
+names: ["Kabugaw", "Jack Fruit", "Narra Tree", "Kalamansi", "Guava", "Rambutan", "Mahugani", "Guyabano", "Cacao", "Paper Tree"] 
