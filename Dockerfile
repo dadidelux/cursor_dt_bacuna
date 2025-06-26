@@ -20,6 +20,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the model and application files
 COPY app.py .
 COPY best_model_phase_3.h5 .
+COPY intercropping_classifier_v2_phase_3.h5 .
+COPY intercropping_clip.index .
+COPY intercropping_image_paths.npy .
 
 # If you have a dataset directory that's needed for validation images, uncomment and modify this line
 # COPY dataset/ ./dataset/
