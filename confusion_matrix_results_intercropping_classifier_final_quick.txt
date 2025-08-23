@@ -1,0 +1,12 @@
+QUICK CONFUSION MATRIX RESULTS
+Model: intercropping_classifier_final.h5
+Accuracy: 0.800 (80.0%)
+
+Per-Class Accuracy:
+Cacao: 0.600
+Caimito: 1.000
+Guava: 0.600
+Guyabano: 0.600
+JackFruit: 1.000
+Kabugaw: 1.000
+Kalamansi: 0.800

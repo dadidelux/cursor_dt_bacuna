@@ -24,11 +24,23 @@ coconut_disease_class_names = ['beetles', 'leaf_miner', 'leaf_spot', 'white_flie
 
 # Class labels for intercropping classifier (alphabetical order of subfolders)
 intercropping_class_names = [
-    'Cacao', 'Caimito', 'Guava', 'Guyabano', 'Jack Fruit', 'Kabugaw',
-    'Kalamansi', 'Mahugani', 'Mango', 'Narra Tree', 'Paper Tree', 'Rambutan', 'Santol'
+    "Cacao",
+    "Caimito",
+    "Guava",
+    "Guyabano",
+    "JackFruit",
+    "Kabugaw",
+    "Kalamansi",
+    "Mahugani",
+    "Mango",
+    "Nara",
+    "Paper",
+    "Rambutan",
+    "Sampalok",
+    "Santol"
 ]
 
-MODEL_INTERCROPPING = 'intercropping_classifier_v2_phase_3.h5'
+MODEL_INTERCROPPING = 'intercropping_classifier_final.h5'
 MODEL_DISEASE = 'best_model_phase_3.h5'
 
 IMG_SIZE = (224, 224)
@@ -45,6 +57,10 @@ def preprocess_image(image):
 def predict_single_label(model, image, class_names):
     processed_image = preprocess_image(image)
     predictions = model.predict(processed_image, verbose=0)
+    st.write(f"[DEBUG] predictions.shape: {predictions.shape}")
+    st.write(f"[DEBUG] len(class_names): {len(class_names)}")
+    if predictions.shape[1] != len(class_names):
+        raise ValueError(f"Model output shape {predictions.shape[1]} does not match number of class names {len(class_names)}")
     class_predictions = []
     for i, pred in enumerate(predictions[0]):
         class_predictions.append((class_names[i], pred * 100))

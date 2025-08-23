@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: coconut_classifier_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+      - ./models:/app/models:ro  # Mount models as read-only
+    environment:
+      - ENABLE_DISEASE=true
+    restart: unless-stopped
+    networks:
+      - api_network
+    # If you want to use GPU, uncomment these lines
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Optional: Add Nginx as reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_api_proxy
+    ports:
+      - "8888:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - api_network
+
+volumes:
+  model_data:
+
+networks:
+  api_network:
+    driver: bridge 
